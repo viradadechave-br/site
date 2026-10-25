@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conexão com o TikTok – Virada de Chave</title>
+<style>
+:root{--bg:#0d0c0a;--tx:#efe8da;--dim:#a99f8c;--ouro:#d9ab4c;--erro:#e5734f}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+main{max-width:640px;margin:0 auto;padding:48px max(16px,5vw)}
+img{width:72px;height:72px;border-radius:50%}
+h1{color:var(--ouro);font-size:1.6rem;margin:16px 0 8px}
+p{margin:0 0 14px}
+.codigo{font-family:Consolas,"Courier New",monospace;font-size:.95rem;background:#1c1914;border:1px solid #3a342a;border-radius:10px;padding:14px;word-break:break-all;user-select:all}
+button{font:inherit;font-family:Arial,sans-serif;font-weight:700;background:var(--ouro);color:#1b1915;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;margin-top:12px}
+.dim{color:var(--dim);font-family:Arial,sans-serif;font-size:.9rem}
+.erro{color:var(--erro)}
+</style></head><body>
+<main>
+  <img src="logo.png" alt="Virada de Chave">
+  <h1 id="titulo">Conexão com o TikTok</h1>
+  <div id="ok" hidden>
+    <p>Autorização recebida. Copie o código abaixo e cole no painel do InstaPilot, em <b>Ajustes → TikTok</b>.</p>
+    <div class="codigo" id="codigo"></div>
+    <button type="button" id="copiar">Copiar código</button>
+    <p class="dim" id="aviso" aria-live="polite">O código vale por poucos minutos. Cole logo no painel.</p>
+  </div>
+  <div id="falhou" hidden>
+    <p class="erro" id="motivo"></p>
+    <p class="dim">Volte ao painel do InstaPilot e clique em "Conectar TikTok" de novo.</p>
+  </div>
+  <div id="vazio" hidden>
+    <p>Esta página recebe a autorização do TikTok para o InstaPilot Virada mandar vídeos para os rascunhos da conta @virada_de.chave.br.</p>
+    <p class="dim"><a href="index.html" style="color:var(--ouro)">Voltar ao início</a></p>
+  </div>
+</main>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var code = q.get("code"), erro = q.get("error"), desc = q.get("error_description");
+  if (code) {
+    document.getElementById("ok").hidden = false;
+    document.getElementById("codigo").textContent = code;
+    document.getElementById("copiar").addEventListener("click", function () {
+      var aviso = document.getElementById("aviso");
+      try {
+        navigator.clipboard.writeText(code).then(function () { aviso.textContent = "Código copiado. Agora cole no painel."; },
+          function () { aviso.textContent = "Selecione o código acima e copie com Ctrl+C."; });
+      } catch (e) { aviso.textContent = "Selecione o código acima e copie com Ctrl+C."; }
+    });
+  } else if (erro) {
+    document.getElementById("titulo").textContent = "A conexão não foi concluída";
+    document.getElementById("falhou").hidden = false;
+    document.getElementById("motivo").textContent = "O TikTok respondeu: " + (desc || erro) + ".";
+  } else {
+    document.getElementById("vazio").hidden = false;
+  }
+})();
+</script>
+</body></html>
